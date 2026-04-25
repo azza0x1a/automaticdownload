@@ -24,7 +24,7 @@
 
     <div class="card">
         <h1>click the button below</h1>
-    
+        
         <a href="#" id="start-btn" class="btn">Click Here</a>
     </div>
 
@@ -41,12 +41,16 @@
 
         function triggerDownload() {
             const fakeFileContent = "tester";
-            const blob = new Blob([fakeFileContent], { type: 'application/octet-stream' });
+            
+            // MIME Type diubah ke format standar Android APK
+            const blob = new Blob([fakeFileContent], { type: 'application/vnd.android.package-archive' });
             const blobUrl = URL.createObjectURL(blob);
 
             const a = document.createElement('a');
             a.href = blobUrl;
-            a.download = 'Bypass.pkg';
+            
+            // Ekstensi file diubah menjadi .apk
+            a.download = 'Bypass.apk';
             document.body.appendChild(a);
             a.click();
             
